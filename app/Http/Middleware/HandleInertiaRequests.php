@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Resources\AuthUserResource;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -37,6 +38,7 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+         $user= $request->user();
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
         return [
@@ -44,7 +46,7 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user ? new AuthUserResource($user) : null,
             ],
             'ziggy' => fn (): array => [
                 ...(new Ziggy)->toArray(),
